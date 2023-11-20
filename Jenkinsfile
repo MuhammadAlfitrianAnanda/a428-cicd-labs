@@ -20,22 +20,22 @@ pipeline {
                 }
             }
         }
-        stage('Manual Approval') {
-            steps {
+       stage('Manual Approval') {
+             steps {
                 script {
-                    def userInput = input(
-                        id: 'userInput', message: 'Lanjutkan ke tahap Deploy?',
-                        parameters: [
-                            [$class: 'BooleanParameterDefinition', defaultValue: true, description: 'Proceed to Deploy', name: 'Proceed']
-                        ]
-                    )
+            def userInput = input(
+                id: 'userInput', message: 'Lanjutkan ke tahap Deploy?',
+                parameters: [
+                    [$class: 'BooleanParameterValue', defaultValue: true, description: 'Proceed to Deploy', name: 'Proceed']
+                ]
+            )
 
-                    if (!userInput.Proceed) {
-                        error 'Pipeline execution aborted by user'
-                    }
-                }
+            if (!userInput) {
+                error 'Pipeline execution aborted by user'
             }
         }
+    }
+}
         stage('Deploy') {
             steps {
                 script {
