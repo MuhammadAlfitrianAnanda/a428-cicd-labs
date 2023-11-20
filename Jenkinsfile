@@ -23,9 +23,16 @@ pipeline {
         stage('Manual Approval') {
             steps {
                 script {
-                    input message: 'Apakah Anda ingin melanjutkan ke tahap Deploy?',
-                        submitter: 'admin',
-                        parameters: [booleanParam(defaultValue: true, description: 'Proceed to Deploy', name: 'Proceed')]
+                    def userInput = input(
+                        id: 'userInput', message: 'Lanjutkan ke tahap Deploy?',
+                        parameters: [
+                            [$class: 'BooleanParameterDefinition', defaultValue: true, description: 'Proceed to Deploy', name: 'Proceed']
+                        ]
+                    )
+
+                    if (!userInput.Proceed) {
+                        error 'Pipeline execution aborted by user'
+                    }
                 }
             }
         }
@@ -34,7 +41,6 @@ pipeline {
                 script {
                     sh './jenkins/scripts/deliver.sh'
                     sleep(time: 60, unit: 'SECONDS') // Menjeda eksekusi selama 1 menit
-                    input message: 'Sudah selesai menggunakan React App? (Klik "Proceed" untuk mengakhiri)'
                     sh './jenkins/scripts/kill.sh'
                 }
             }
