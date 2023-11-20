@@ -25,7 +25,7 @@ pipeline {
                 script {
                     input message: 'Apakah Anda ingin melanjutkan ke tahap Deploy?',
                         submitter: 'admin',
-                        parameters: [boolean(defaultValue: true, description: 'Proceed to Deploy', name: 'Proceed')]
+                        parameters: [booleanParam(defaultValue: true, description: 'Proceed to Deploy', name: 'Proceed')]
                 }
             }
         }
