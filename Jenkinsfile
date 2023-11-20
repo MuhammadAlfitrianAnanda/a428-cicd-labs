@@ -20,11 +20,29 @@ pipeline {
                 }
             }
         }
-        stage('Deploy') { 
+        stage('Manual Approval') {
             steps {
-                sh './jenkins/scripts/deliver.sh' 
-                input message: 'Sudah selesai menggunakan React App? (Klik "Proceed" untuk mengakhiri)' 
-                sh './jenkins/scripts/kill.sh' 
+                script {
+                    def userInput = input(
+                        id: 'userInput', message: 'Lanjutkan ke tahap Deploy?',
+                        parameters: [
+                            [$class: 'BooleanParameterDefinition', defaultValue: true, description: 'Proceed to Deploy', name: 'Proceed']
+                        ]
+                    )
+
+                    if (!userInput.Proceed) {
+                        error 'Pipeline execution aborted by user'
+                    }
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                script {
+                    sh './jenkins/scripts/deliver.sh'
+                    sleep(time: 60, unit: 'SECONDS') // Menjeda eksekusi selama 1 menit
+                    sh './jenkins/scripts/kill.sh'
+                }
             }
         }
     }
